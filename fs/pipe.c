@@ -21,11 +21,7 @@
 #include <linux/audit.h>
 #include <linux/syscalls.h>
 #include <linux/fcntl.h>
-<<<<<<< HEAD
 #include <linux/aio.h>
-=======
-#include <linux/memcontrol.h>
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 #include <asm/uaccess.h>
 #include <asm/ioctls.h>
@@ -33,11 +29,6 @@
 #include "internal.h"
 
 /*
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
  * New pipe buffers will be restricted to this size while the user is exceeding
  * their pipe buffer quota. The general pipe use case needs at least two
  * buffers: one for data yet to be read, and one for new data. If this is less
@@ -53,10 +44,6 @@
 #define PIPE_MIN_DEF_BUFFERS 2
 
 /*
-<<<<<<< HEAD
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
-=======
->>>>>>> cb99ff2b40d4 (Merge 4.9.280 into android-4.9-o)
  * The max size that a non-root user is allowed to grow the pipe. Can
  * be set by root in /proc/sys/fs/pipe-max-size
  */
@@ -1559,26 +1546,12 @@ static long pipe_set_size(struct pipe_inode_info *pipe, unsigned long arg)
 	 * again like we would do for growing. If the pipe currently
 	 * contains more buffers than arg, then return busy.
 	 */
-<<<<<<< HEAD
 	if (nr_pages < pipe->nrbufs)
 		return -EBUSY;
 
 	bufs = kcalloc(nr_pages, sizeof(*bufs), GFP_KERNEL | __GFP_NOWARN);
 	if (unlikely(!bufs))
 		return -ENOMEM;
-=======
-	if (nr_pages < pipe->nrbufs) {
-		ret = -EBUSY;
-		goto out_revert_acct;
-	}
-
-	bufs = kcalloc(nr_pages, sizeof(*bufs),
-		       GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
-	if (unlikely(!bufs)) {
-		ret = -ENOMEM;
-		goto out_revert_acct;
-	}
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 
 	/*
 	 * The pipe array wraps around, so just start the new one at zero
@@ -1601,16 +1574,12 @@ static long pipe_set_size(struct pipe_inode_info *pipe, unsigned long arg)
 			memcpy(bufs + head, pipe->bufs, tail * sizeof(struct pipe_buffer));
 	}
 
-<<<<<<< HEAD
 	account_pipe_buffers(pipe, pipe->buffers, nr_pages);
-=======
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	pipe->curbuf = 0;
 	kfree(pipe->bufs);
 	pipe->bufs = bufs;
 	pipe->buffers = nr_pages;
 	return nr_pages * PAGE_SIZE;
-<<<<<<< HEAD
 }
 
 /*
@@ -1623,12 +1592,6 @@ static inline unsigned int round_pipe_size(unsigned int size)
 
 	nr_pages = (size + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	return roundup_pow_of_two(nr_pages) << PAGE_SHIFT;
-=======
-
-out_revert_acct:
-	(void) account_pipe_buffers(pipe->user, nr_pages, pipe->buffers);
-	return ret;
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 }
 
 /*
@@ -1638,25 +1601,13 @@ out_revert_acct:
 int pipe_proc_fn(struct ctl_table *table, int write, void __user *buf,
 		 size_t *lenp, loff_t *ppos)
 {
-<<<<<<< HEAD
-=======
-	unsigned int rounded_pipe_max_size;
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	int ret;
 
 	ret = proc_dointvec_minmax(table, write, buf, lenp, ppos);
 	if (ret < 0 || !write)
 		return ret;
 
-<<<<<<< HEAD
 	pipe_max_size = round_pipe_size(pipe_max_size);
-=======
-	rounded_pipe_max_size = round_pipe_size(pipe_max_size);
-	if (rounded_pipe_max_size == 0)
-		return -EINVAL;
-
-	pipe_max_size = rounded_pipe_max_size;
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	return ret;
 }
 
@@ -1682,7 +1633,6 @@ long pipe_fcntl(struct file *file, unsigned int cmd, unsigned long arg)
 	__pipe_lock(pipe);
 
 	switch (cmd) {
-<<<<<<< HEAD
 	case F_SETPIPE_SZ: {
 		unsigned int size, nr_pages;
 
@@ -1705,11 +1655,7 @@ long pipe_fcntl(struct file *file, unsigned int cmd, unsigned long arg)
 		ret = pipe_set_size(pipe, nr_pages);
 		break;
 		}
-=======
-	case F_SETPIPE_SZ:
-		ret = pipe_set_size(pipe, arg);
-		break;
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
+
 	case F_GETPIPE_SZ:
 		ret = pipe->buffers * PAGE_SIZE;
 		break;
@@ -1718,10 +1664,7 @@ long pipe_fcntl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 	}
 
-<<<<<<< HEAD
 out:
-=======
->>>>>>> cb99ff2b40d4357e990bd96b2c791860c4b0a414
 	__pipe_unlock(pipe);
 	return ret;
 }
