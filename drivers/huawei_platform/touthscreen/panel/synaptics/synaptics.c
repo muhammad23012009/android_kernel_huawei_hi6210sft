@@ -15,6 +15,10 @@
 #include <dsm/dsm_pub.h>
 #endif
 
+#include <linux/input.h>
+#include <linux/dt2w.h>
+#define POWER_KEY_RELEASE	(0)
+#define POWER_KEY_PRESS		(1)
 
 #define SYNAPTICS_CHIP_INFO "synaptics-"
 #define PLK_FPC_UNCLK_ENABLE_FLAG "plk-fpc-unclock-flag"
@@ -142,6 +146,9 @@ static int synaptics_chip_get_capacitance_test_type(struct ts_test_type_info *in
 static int synaptics_rmi4_dsm_debug(void);
 #endif
 static int synaptics_regs_operate(struct ts_regs_info *info);
+
+
+static struct input_dev *idev;
 
 #define GLOVE_SWITCH_ADDR 0x0400
 
@@ -4073,6 +4080,11 @@ static int synaptics_rmi4_f51_init(struct synaptics_rmi4_data *rmi4_data,
 	return 0;
 }
 
+void register_power_input(struct input_dev *dev) {
+    idev = dev;
+    TS_LOG_DEBUG("Meticulus: power input registered with TS.\n");
+}
+
 static int synaptics_input_config(struct input_dev *input_dev)
 {
 	set_bit(EV_SYN, input_dev->evbit);
@@ -4193,6 +4205,18 @@ static int easy_wakeup_gesture_report_coordinate(struct synaptics_rmi4_data *rmi
 	return retval;
 }
 
+static void meticulus_wake_up() {
+	if(idev) {
+	    input_report_key(idev, KEY_POWER, POWER_KEY_PRESS);
+	    input_sync(idev);
+	    input_report_key(idev, KEY_POWER, POWER_KEY_RELEASE);
+	    input_sync(idev);
+	    TS_LOG_INFO("Meticulus: KEY_POWER reported!\n");
+	} else {
+	    TS_LOG_INFO("Meticulus: power key not registered!\n");
+	}
+}
+
 static int synaptics_rmi4_key_gesture_report(struct synaptics_rmi4_data *rmi4_data,
 		struct ts_fingers *info, struct ts_easy_wakeup_info *gesture_report_info, unsigned char *get_gesture_wakeup_data)
 {
@@ -4304,6 +4328,7 @@ static int synaptics_rmi4_key_gesture_report(struct synaptics_rmi4_data *rmi4_da
 	}
 
 	if(0 != reprot_gesture_key_value) {
+		meticulus_wake_up();
 		wake_lock_timeout(&g_ts_data.ts_wake_lock, 5*HZ);
 		mutex_lock(&wrong_touch_lock);
 		if (true == rmi4_data->synaptics_chip_data->easy_wakeup_info.off_motion_on) {
